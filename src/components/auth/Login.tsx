@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, Clock, Shield, Fingerprint } from 'lucide-react';
+import { Building2, Clock, Shield, Fingerprint, UserPlus } from 'lucide-react';
+import AdminRegisterModal from './AdminRegisterModal';
 
 interface LoginProps {
   onLogin: (role: 'admin' | 'employee') => void;
@@ -16,11 +17,17 @@ const Login = ({ onLogin }: LoginProps) => {
   const [password, setPassword] = useState('');
   const [adminId, setAdminId] = useState('');
   const [activeTab, setActiveTab] = useState('employee');
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent, role: 'admin' | 'employee') => {
     e.preventDefault();
     console.log(`${role} login attempt:`, { email, password, adminId: role === 'admin' ? adminId : undefined });
     onLogin(role);
+  };
+
+  const handleAdminRegister = (adminData: any) => {
+    console.log('New admin registered:', adminData);
+    // Here you would typically save the admin data to your backend/database
   };
 
   return (
@@ -121,6 +128,25 @@ const Login = ({ onLogin }: LoginProps) => {
                   <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
                     Sign In as Admin
                   </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">Or</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setIsRegisterModalOpen(true)}
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Create Admin Account
+                  </Button>
                 </form>
               </TabsContent>
             </Tabs>
@@ -133,6 +159,12 @@ const Login = ({ onLogin }: LoginProps) => {
             </div>
           </CardContent>
         </Card>
+
+        <AdminRegisterModal
+          isOpen={isRegisterModalOpen}
+          onClose={() => setIsRegisterModalOpen(false)}
+          onRegister={handleAdminRegister}
+        />
       </div>
     </div>
   );

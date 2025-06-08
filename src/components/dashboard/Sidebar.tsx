@@ -16,7 +16,8 @@ import {
   LogOut, 
   Settings,
   Calendar,
-  Activity
+  Activity,
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -31,6 +32,7 @@ const Sidebar = ({ userRole, activeView, onViewChange, onLogout }: SidebarProps)
   const adminMenuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'employees', label: 'Employees', icon: Users },
+    { id: 'admins', label: 'Admins', icon: Shield },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
