@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,11 +12,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Search, Plus, Edit, Trash2, Users } from 'lucide-react';
+import AddEmployeeModal from './AddEmployeeModal';
 
 const EmployeeManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
-
-  const employees = [
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [employees, setEmployees] = useState([
     {
       id: 1,
       name: 'John Doe',
@@ -58,13 +58,17 @@ const EmployeeManagement = () => {
       status: 'Active',
       joinDate: '2023-04-05',
     },
-  ];
+  ]);
 
   const filteredEmployees = employees.filter(employee =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddEmployee = (newEmployee: any) => {
+    setEmployees(prev => [...prev, newEmployee]);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -73,7 +77,10 @@ const EmployeeManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
           <p className="text-gray-600">Manage employee records and biometric data</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button 
+          className="bg-blue-600 hover:bg-blue-700"
+          onClick={() => setIsAddModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Employee
         </Button>
@@ -146,6 +153,12 @@ const EmployeeManagement = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <AddEmployeeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddEmployee={handleAddEmployee}
+      />
     </div>
   );
 };

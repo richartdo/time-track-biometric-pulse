@@ -1,10 +1,21 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Clock, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import RealtimeClock from '../common/RealtimeClock';
 import AttendanceChart from '../common/AttendanceChart';
+import EmployeeListModal from './EmployeeListModal';
 
 const AdminDashboard = () => {
+  const [selectedEmployeeList, setSelectedEmployeeList] = useState<{
+    isOpen: boolean;
+    title: string;
+    statusFilter: 'Present' | 'Absent' | 'Late';
+  }>({
+    isOpen: false,
+    title: '',
+    statusFilter: 'Present',
+  });
+
   const stats = [
     {
       title: 'Total Employees',
@@ -19,6 +30,8 @@ const AdminDashboard = () => {
       icon: CheckCircle,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
+      clickable: true,
+      statusFilter: 'Present' as const,
     },
     {
       title: 'Absent Today',
@@ -26,6 +39,8 @@ const AdminDashboard = () => {
       icon: XCircle,
       color: 'text-red-600',
       bgColor: 'bg-red-100',
+      clickable: true,
+      statusFilter: 'Absent' as const,
     },
     {
       title: 'Late Arrivals',
@@ -33,7 +48,17 @@ const AdminDashboard = () => {
       icon: Clock,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100',
+      clickable: true,
+      statusFilter: 'Late' as const,
     },
+  ];
+
+  // Mock employee data for the modal
+  const employeeData = [
+    { id: 1, name: 'John Doe', department: 'Engineering', status: 'Present' as const, clockIn: '09:15 AM', clockOut: '' },
+    { id: 2, name: 'Sarah Smith', department: 'Marketing', status: 'Present' as const, clockIn: '08:45 AM', clockOut: '05:30 PM' },
+    { id: 3, name: 'Mike Johnson', department: 'Sales', status: 'Late' as const, clockIn: '09:30 AM', clockOut: '' },
+    { id: 4, name: 'Emily Brown', department: 'HR', status: 'Absent' as const },
   ];
 
   const recentActivity = [
@@ -42,6 +67,16 @@ const AdminDashboard = () => {
     { name: 'Mike Johnson', action: 'Clock In', time: '08:45 AM', status: 'on-time' },
     { name: 'Emily Brown', action: 'Clock Out', time: '06:15 PM', status: 'overtime' },
   ];
+
+  const handleStatClick = (stat: any) => {
+    if (stat.clickable) {
+      setSelectedEmployeeList({
+        isOpen: true,
+        title: `${stat.title} - ${stat.value} Employees`,
+        statusFilter: stat.statusFilter,
+      });
+    }
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -55,7 +90,11 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-shadow">
+          <Card 
+            key={stat.title} 
+            className={`hover:shadow-lg transition-shadow ${stat.clickable ? 'cursor-pointer' : ''}`}
+            onClick={() => handleStatClick(stat)}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -112,6 +151,14 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      <EmployeeListModal
+        isOpen={selectedEmployeeList.isOpen}
+        onClose={() => setSelectedEmployeeList(prev => ({ ...prev, isOpen: false }))}
+        title={selectedEmployeeList.title}
+        employees={employeeData}
+        statusFilter={selectedEmployeeList.statusFilter}
+      />
     </div>
   );
 };

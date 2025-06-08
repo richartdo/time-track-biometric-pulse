@@ -13,9 +13,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { FileText, Download, Filter, Calendar } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const AttendanceReports = () => {
   const [dateFilter, setDateFilter] = useState('');
+  const { toast } = useToast();
 
   const attendanceData = [
     {
@@ -60,6 +62,10 @@ const AttendanceReports = () => {
     },
   ];
 
+  const filteredData = dateFilter 
+    ? attendanceData.filter(record => record.date === dateFilter)
+    : attendanceData;
+
   const getStatusBadge = (status: string) => {
     const statusStyles = {
       'On Time': 'bg-green-100 text-green-700',
@@ -75,6 +81,42 @@ const AttendanceReports = () => {
     );
   };
 
+  const handleExportCSV = () => {
+    const headers = ['Employee', 'Date', 'Clock In', 'Clock Out', 'Total Hours', 'Status', 'Biometric ID'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredData.map(record => [
+        record.employeeName,
+        record.date,
+        record.clockIn,
+        record.clockOut,
+        record.totalHours,
+        record.status,
+        record.biometricId
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance_report_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export Successful",
+      description: "CSV file has been downloaded",
+    });
+  };
+
+  const handleExportPDF = () => {
+    toast({
+      title: "PDF Export",
+      description: "PDF export functionality would be implemented with a PDF library",
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -83,11 +125,11 @@ const AttendanceReports = () => {
           <p className="text-gray-600">View and export attendance data</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportCSV}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportPDF}>
             <Download className="h-4 w-4 mr-2" />
             Export PDF
           </Button>
@@ -114,6 +156,11 @@ const AttendanceReports = () => {
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </Button>
+            {dateFilter && (
+              <Button variant="outline" onClick={() => setDateFilter('')}>
+                Clear Filter
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -130,7 +177,7 @@ const AttendanceReports = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendanceData.map((record) => (
+              {filteredData.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{record.employeeName}</TableCell>
                   <TableCell>{record.date}</TableCell>

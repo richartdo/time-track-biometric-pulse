@@ -1,16 +1,30 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Clock, Calendar, Activity, CheckCircle } from 'lucide-react';
 import RealtimeClock from '../common/RealtimeClock';
+import BiometricModal from './BiometricModal';
+import { useToast } from '@/hooks/use-toast';
 
 const EmployeeDashboard = () => {
-  const todayStats = {
+  const [biometricModal, setBiometricModal] = useState<{
+    isOpen: boolean;
+    action: 'clock-in' | 'clock-out' | 'break';
+  }>({
+    isOpen: false,
+    action: 'clock-in',
+  });
+  
+  const [todayStats, setTodayStats] = useState({
     clockIn: '09:15 AM',
     clockOut: '--:--',
     breakTime: '45 min',
     totalHours: '7h 30m',
-  };
+    isOnBreak: false,
+    isClockedIn: true,
+  });
+
+  const { toast } = useToast();
 
   const weeklyHours = [
     { day: 'Mon', hours: 8.0, status: 'complete' },
@@ -21,6 +35,31 @@ const EmployeeDashboard = () => {
     { day: 'Sat', hours: 0, status: 'upcoming' },
     { day: 'Sun', hours: 0, status: 'upcoming' },
   ];
+
+  const handleBiometricAction = (action: 'clock-in' | 'clock-out' | 'break') => {
+    setBiometricModal({ isOpen: true, action });
+  };
+
+  const handleBiometricSuccess = () => {
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    if (biometricModal.action === 'clock-out') {
+      setTodayStats(prev => ({
+        ...prev,
+        clockOut: currentTime,
+        isClockedIn: false,
+      }));
+    } else if (biometricModal.action === 'break') {
+      setTodayStats(prev => ({
+        ...prev,
+        isOnBreak: !prev.isOnBreak,
+      }));
+    }
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -62,13 +101,32 @@ const EmployeeDashboard = () => {
               </div>
 
               <div className="mt-6 flex gap-4">
-                <Button className="flex-1 bg-green-600 hover:bg-green-700">
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Clock Out
-                </Button>
-                <Button variant="outline" className="flex-1">
+                {todayStats.isClockedIn ? (
+                  <Button 
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    onClick={() => handleBiometricAction('clock-out')}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Clock Out
+                  </Button>
+                ) : (
+                  <Button 
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    onClick={() => handleBiometricAction('clock-in')}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Clock In
+                  </Button>
+                )}
+                
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleBiometricAction('break')}
+                  disabled={!todayStats.isClockedIn}
+                >
                   <Clock className="h-4 w-4 mr-2" />
-                  Start Break
+                  {todayStats.isOnBreak ? 'End Break' : 'Start Break'}
                 </Button>
               </div>
             </CardContent>
@@ -154,6 +212,13 @@ const EmployeeDashboard = () => {
           </Card>
         </div>
       </div>
+
+      <BiometricModal
+        isOpen={biometricModal.isOpen}
+        onClose={() => setBiometricModal(prev => ({ ...prev, isOpen: false }))}
+        action={biometricModal.action}
+        onSuccess={handleBiometricSuccess}
+      />
     </div>
   );
 };

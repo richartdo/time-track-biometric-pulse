@@ -5,6 +5,8 @@ import EmployeeDashboard from './EmployeeDashboard';
 import AdminDashboard from './AdminDashboard';
 import EmployeeManagement from './EmployeeManagement';
 import AttendanceReports from './AttendanceReports';
+import SchedulePage from './SchedulePage';
+import ActivityPage from './ActivityPage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface DashboardProps {
@@ -17,7 +19,16 @@ const Dashboard = ({ userRole, onLogout }: DashboardProps) => {
 
   const renderContent = () => {
     if (userRole === 'employee') {
-      return <EmployeeDashboard />;
+      switch (activeView) {
+        case 'dashboard':
+          return <EmployeeDashboard />;
+        case 'schedule':
+          return <SchedulePage />;
+        case 'activity':
+          return <ActivityPage />;
+        default:
+          return <EmployeeDashboard />;
+      }
     }
 
     switch (activeView) {
