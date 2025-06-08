@@ -1,14 +1,28 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import Login from '../components/auth/Login';
+import Dashboard from '../components/dashboard/Dashboard';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<'admin' | 'employee' | null>(null);
+
+  const handleLogin = (role: 'admin' | 'employee') => {
+    setIsAuthenticated(true);
+    setUserRole(role);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  return <Dashboard userRole={userRole} onLogout={handleLogout} />;
 };
 
 export default Index;
