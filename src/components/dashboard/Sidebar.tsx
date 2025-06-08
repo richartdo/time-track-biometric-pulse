@@ -51,7 +51,7 @@ const Sidebar = ({ userRole, activeView, onViewChange, onLogout }: SidebarProps)
             <Clock className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="font-semibold text-gray-900">TimeSync Pro</h2>
+            <h2 className="font-semibold text-gray-900">HRClock</h2>
             <p className="text-sm text-gray-500 capitalize">{userRole} Panel</p>
           </div>
         </div>

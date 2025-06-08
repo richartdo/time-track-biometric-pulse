@@ -14,11 +14,12 @@ interface LoginProps {
 const Login = ({ onLogin }: LoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [adminId, setAdminId] = useState('');
   const [activeTab, setActiveTab] = useState('employee');
 
   const handleSubmit = (e: React.FormEvent, role: 'admin' | 'employee') => {
     e.preventDefault();
-    console.log(`${role} login attempt:`, { email, password });
+    console.log(`${role} login attempt:`, { email, password, adminId: role === 'admin' ? adminId : undefined });
     onLogin(role);
   };
 
@@ -31,7 +32,7 @@ const Login = ({ onLogin }: LoginProps) => {
               <Clock className="h-8 w-8 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">TimeSync Pro</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">HRClock</h1>
           <p className="text-gray-600">Employee Attendance Management System</p>
         </div>
 
@@ -85,6 +86,17 @@ const Login = ({ onLogin }: LoginProps) => {
               <TabsContent value="admin">
                 <form onSubmit={(e) => handleSubmit(e, 'admin')} className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="admin-id">Admin ID</Label>
+                    <Input
+                      id="admin-id"
+                      type="text"
+                      placeholder="ADM001"
+                      value={adminId}
+                      onChange={(e) => setAdminId(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="admin-email">Admin Email</Label>
                     <Input
                       id="admin-email"
@@ -116,7 +128,7 @@ const Login = ({ onLogin }: LoginProps) => {
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex items-center justify-center text-sm text-gray-500">
                 <Fingerprint className="h-4 w-4 mr-2" />
-                Biometric authentication available at kiosks
+                Biometric authentication at the Entrance
               </div>
             </div>
           </CardContent>

@@ -64,7 +64,7 @@ const BiometricModal = ({ isOpen, onClose, action, onSuccess }: BiometricModalPr
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>Biometric Authentication</DialogTitle>
+          <DialogTitle>Biometric Authentication at the Entrance</DialogTitle>
         </DialogHeader>
         
         <div className="flex flex-col items-center space-y-6 py-6">
